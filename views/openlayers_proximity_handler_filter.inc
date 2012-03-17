@@ -138,6 +138,7 @@ class openlayers_proximity_handler_filter extends views_handler_filter_numeric {
       '#options' => array(
         'location' => t('Get location from a string'),
         'node' => t('Get location from a node'),
+        'user' => t('Get location from the current users profile'),
       ),
     );
   }
@@ -228,11 +229,14 @@ class openlayers_proximity_handler_filter extends views_handler_filter_numeric {
       }
 
       if ($this->options['location_as'] == 'location') {
-        $this->unset_attributes($filter, array('node'));
+        $this->unset_attributes($filter, array('node', 'user'));
       }
       if ($this->options['location_as'] == 'node') {
-        $this->unset_attributes($filter, array('location'));
+        $this->unset_attributes($filter, array('location', 'user'));
       }
+      if ($this->options['location_as'] == 'user') {
+        $this->unset_attributes($filter, array('location','node'));
+      } 
 
       // Add meaningful suffix to value.
       if (isset($filter['value'])) {
@@ -333,6 +337,14 @@ class openlayers_proximity_handler_filter extends views_handler_filter_numeric {
   }
 
   /**
+   * Distance from a User: user string is in user profile geocode field.
+   */
+  function process_user_proximity() {
+    $this->value['lat'] = $this->value['lon'] = NULL;
+    if (list($this->value['lat'], $this->value['lon'])  = db_query("SELECT field_geolocation_user_lat, field_geolocation_user_lon FROM {field_data_field_user_geolocation} WHERE entity_id = :uid", array(':uid' => $GLOBALS['user']->uid))
+    	drupal_alter('process_user_proximity', $this->value);
+  }
+  /**
    * Distance from a location: query is a string and it will be geolocated.
    */
   function process_location_proximity() {
@@ -343,6 +355,7 @@ class openlayers_proximity_handler_filter extends views_handler_filter_numeric {
     }
     drupal_alter('process_location_proximity', $this->value);
   }
+
 
   function secure_input() {
     $this->value['value'] = isset($this->value['value']) ? $this->value['value'] : $this->options['value']['value'];

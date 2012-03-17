@@ -27,13 +27,6 @@ function openlayers_proximity_schema() {
         'default' => 0,
         'description' => 'The primary identifier for a node.',
       ),
-      'uid' => array(
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => FALSE,
-        'default' => 0,
-        'description' => 'The primary identifier for a user.',
-      ),
       'lat' => array(
         'type' => 'float',
         'size' => 'big',
@@ -49,7 +42,6 @@ function openlayers_proximity_schema() {
     ),
     'indexes' => array(
       'nid' => array('nid'),
-      'uid' => array('uid'),
       'lat' => array('lat'),
       'lon' => array('lon'),
     ),
@@ -69,7 +61,6 @@ function openlayers_proximity_uninstall() {
 function openlayers_proximity_update_6201() {
   $return = array();
   db_add_index('openlayers_proximity', 'nid', array('nid'));
-  db_add_index('openlayers_proximity', 'uid', array('uid'));
   db_add_index('openlayers_proximity', 'lat', array('lat'));
   db_add_index('openlayers_proximity', 'lon', array('lon'));
   return t('Indexes Added to table: openlayers_proximity.');
