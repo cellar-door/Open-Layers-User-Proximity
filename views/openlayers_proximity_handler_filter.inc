@@ -23,6 +23,9 @@ class openlayers_proximity_handler_filter extends views_handler_filter_numeric {
     if ($this->options['location_as'] == 'location') {
       $this->process_location_proximity();
     }
+    if ($this->options['location_as'] == 'user') {
+      $this->process_user_proximity();
+    }
   }
 
   /**
@@ -335,14 +338,14 @@ class openlayers_proximity_handler_filter extends views_handler_filter_numeric {
     $this->value['lat'] = ($y1 + $y2) / 2;
     drupal_alter('process_node_proximity', $this->value);
   }
-
   /**
    * Distance from a User: user string is in user profile geocode field.
    */
   function process_user_proximity() {
     $this->value['lat'] = $this->value['lon'] = NULL;
-    if (list($this->value['lat'], $this->value['lon'])  = db_query("SELECT field_geolocation_user_lat, field_geolocation_user_lon FROM {field_data_field_user_geolocation} WHERE entity_id = :uid", array(':uid' => $GLOBALS['user']->uid))
+    if (list($this->value['lat'], $this->value['lon'])  = db_query("SELECT field_geolocation_user_lat, field_geolocation_user_lon FROM {field_data_field_user_geolocation} WHERE entity_id = :uid", array(':uid' => $GLOBALS['user']->uid))){
     	drupal_alter('process_user_proximity', $this->value);
+    }
   }
   /**
    * Distance from a location: query is a string and it will be geolocated.
